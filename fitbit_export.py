@@ -50,7 +50,7 @@ DAILIES = {
     "daily-oxygen-saturation": "daily_oxygen_saturation.date",
     "daily-respiratory-rate": "daily_respiratory_rate.date",
 }
-COLUMNS = ["Date", "Slept", "Bed-Wake", "Resting HR", "HRV (ms)", "SpO2 %", "Steps", "Zone min"]
+COLUMNS = ["Date", "Slept", "Bed-Wake", "Resting HR", "Asleep HR avg / low", "HRV (ms)", "SpO2 %", "Steps", "Zone min"]
 
 
 def client():
@@ -149,6 +149,20 @@ def pull_day(token, day):
     # The night (and any nap) that ended on this day.
     rec["sleep"] = list_points(token, "sleep", 'sleep.interval.end_time >= "%s" AND sleep.interval.end_time < "%s"'
                                % (rfc(start), rfc(end)), page_size=25)
+    # Heart rate and blood oxygen during the main sleep, from the raw samples: Google's daily SpO2 summary can lag a
+    # few nights behind the samples.
+    sleeps = rec["sleep"] if isinstance(rec["sleep"], list) else []
+    main = max(sleeps, key=lambda p: first_number(p.get("sleep", {}).get("summary", {}), ("minutesAsleep",)) or 0,
+               default=None)
+    if main:
+        iv = main["sleep"]["interval"]
+        for dtype, key, field, prefer in (("heart-rate", "heartRate", "heart_rate", ("beatsPerMinute",)),
+                                          ("oxygen-saturation", "oxygenSaturation", "oxygen_saturation", ("percentage",))):
+            pts = list_points(token, dtype, '%s.sample_time.physical_time >= "%s" AND %s.sample_time.physical_time < "%s"'
+                              % (field, iv["startTime"], field, iv["endTime"]), page_size=10000)
+            vals = [] if isinstance(pts, dict) else [v for v in (first_number(p.get(key, {}), prefer) for p in pts) if v is not None]
+            rec["asleep-" + dtype] = pts if isinstance(pts, dict) else (
+                {"samples": len(vals), "min": min(vals), "avg": round(sum(vals) / len(vals), 1), "max": max(vals)} if vals else {})
     for dtype, field in DAILIES.items():
         rec[dtype] = list_points(token, dtype, '%s >= "%s" AND %s < "%s"'
                                  % (field, day.isoformat(), field, (day + datetime.timedelta(days=1)).isoformat()))
@@ -209,10 +223,13 @@ def row(rec):
         n = None if isinstance(v, dict) and "error" in v else first_number(v, prefer)
         return fmt % n if n is not None else ""
 
+    hr = rec.get("asleep-heart-rate") or {}
+    spo2 = num("daily-oxygen-saturation", ("averagePercentage",), "%.1f") or (
+        "%.1f" % rec["asleep-oxygen-saturation"]["avg"] if (rec.get("asleep-oxygen-saturation") or {}).get("avg") else "")
     return [rec["date"], slept, bed, num("daily-resting-heart-rate", ("beatsPerMinute",)),
+            "%d / %d" % (hr["avg"], hr["min"]) if hr.get("avg") else "",
             num("daily-heart-rate-variability", ("averageHeartRateVariabilityMilliseconds",)),
-            num("daily-oxygen-saturation", ("averagePercentage",), "%.1f"), num("steps"),
-            num("active-zone-minutes")]
+            spo2, num("steps"), num("active-zone-minutes")]
 
 
 def write_summaries(out):
