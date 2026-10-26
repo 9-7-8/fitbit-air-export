@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!-- Fitbit Air Export <https://github.com/9-7-8/fitbit-air-export>
+     Copyright (C) 2026 Ixora. SPDX-License-Identifier: GPL-3.0-or-later
+     Free software with no warranty, under the GNU General Public License,
+     version 3 or later: see LICENSE in the repository, or
+     <https://www.gnu.org/licenses/>. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitbit Air Export</title>
+<meta name="description" content="A small script that copies your own Fitbit Air data from the Google Health API to plain files on your computer.">
+<link rel="stylesheet" href="theme.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  body { margin: 0; padding: 3rem 16px 5rem; }
+  main { max-width: 760px; margin: 0 auto; }
+  p, li { max-width: 66ch; }
+  p.lede { margin: 0 0 2.4rem; }
+  h2 {
+    margin: 3rem 0 0.9rem; padding-bottom: 0.55rem; border-bottom: 1px solid var(--line-soft);
+    text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.78rem;
+  }
+  ol, ul { padding-left: 1.2rem; }
+  li { margin-bottom: 0.55rem; color: var(--text-dim); }
+  li b { color: var(--text); font-weight: 400; }
+  pre { overflow-x: auto; padding: 1rem; background: var(--sunken); border: 1px solid var(--line-soft); font-family: var(--mono); font-size: 0.82rem; }
+  .dim { color: var(--text-dim); }
+  footer { margin-top: 4rem; font-size: 0.8rem; color: var(--text-faint); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fitbit Air Export</h1>
+  <p class="lede">A small, free Python script that copies <b>your own</b> Fitbit data (sleep, resting heart rate,
+    heart rate variability, blood oxygen, steps, active minutes) from Google to plain files on your computer:
+    one JSON file per day, plus a CSV and a Markdown table. It is for people who keep a journal or notes and want
+    their numbers next to them.</p>
+
+  <h2>What it does</h2>
+  <ul>
+    <li><b>Reads, never writes.</b> It asks Google for read-only access to your sleep, activity and health-metric data.</li>
+    <li><b>Runs on your computer only.</b> There is no server and no account with us. Data goes from Google straight to a folder you choose.</li>
+    <li><b>You own the connection.</b> You create your own Google Cloud project and sign-in client, so the only party involved is you.</li>
+    <li><b>Built for the Google Health API</b>, which replaced the Fitbit Web API in 2026. Works with the Fitbit Air and other Fitbit devices on a Google account.</li>
+  </ul>
+
+  <h2>Setup, once</h2>
+  <ol>
+    <li>Sign in to the Google Health (Fitbit) app on your phone with your Google account.</li>
+    <li>In the <a href="https://console.cloud.google.com/projectcreate">Google Cloud console</a>, create a project and
+      <a href="https://console.cloud.google.com/apis/library/health.googleapis.com">enable the Google Health API</a>.</li>
+    <li>Under Google Auth Platform: set up the consent screen (External), add yourself as a test user, and on
+      Data Access add the scopes <code>googlehealth.sleep.readonly</code>, <code>googlehealth.activity_and_fitness.readonly</code>
+      and <code>googlehealth.health_metrics_and_measurements.readonly</code>.</li>
+    <li>Create an OAuth client of type <b>Desktop app</b>, download its JSON, and save it as
+      <code>~/.google-health/client_secret.json</code>.</li>
+    <li>Run <code>python fitbit_export.py auth</code> and approve access in the browser.</li>
+  </ol>
+  <p class="dim">While your Google project is in "Testing", Google expires the sign-in after 7 days, so you'd run
+    <code>auth</code> again weekly. Publishing your own project removes that.</p>
+
+  <h2>Daily use</h2>
+<pre>python fitbit_export.py                 # last 3 days into ./fitbit-data
+python fitbit_export.py --days 30       # backfill
+python fitbit_export.py --out ~/notes/fitbit</pre>
+  <p>Schedule it (Task Scheduler, cron, launchd) for an hour or two after you usually wake, once your phone has synced.
+    It re-pulls the last three days each run, so a late sync fills itself in.</p>
+
+  <h2>Links</h2>
+  <ul>
+    <li><a href="https://github.com/9-7-8/fitbit-air-export">Source code on GitHub</a> (GPL-3.0)</li>
+    <li><a href="privacy.html">Privacy policy</a></li>
+    <li><a href="https://developers.google.com/health">Google Health API documentation</a></li>
+  </ul>
+
+  <footer>Not affiliated with Google or Fitbit. Fitbit is a trademark of Google LLC.
+    Free software under the GNU GPL v3 or later, with no warranty.</footer>
+</main>
+</body>
+</html>

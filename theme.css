@@ -1,0 +1,441 @@
+/* theme.css, from SmallPages <https://github.com/9-7-8/SmallPages>
+   Copyright (C) 2026 Ixora. SPDX-License-Identifier: GPL-3.0-or-later
+   Free software with no warranty, under the GNU General Public License,
+   version 3 or later: see LICENSE in the repository, or
+   <https://www.gnu.org/licenses/>. */
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@200;300;400;500;600&display=swap");
+
+/* ============================================================================
+   SmallPages — unified theme
+   Monochromatic glow on true OLED black. One typeface, one accent.
+
+   Two knobs, both below. --sat is the master: 0 is the default white glow,
+   1 is full colour. --h picks which colour that is once --sat is above 0,
+   and does nothing at all while --sat is 0.
+
+     --sat: 0      white (default)
+     --sat: 1      full colour, at whatever --h says
+     --sat: 0.35   a barely-there wash of --h
+
+     --h: 288 violet-magenta · 190 cyan · 330 hot pink
+          155 acid green · 40 amber · 0 red
+
+   Link it in <head>, before the page's own <style> block:
+     <link rel="stylesheet" href="theme.css">
+   Pages carry layout and sizing only; every colour and typeface lives here.
+   ========================================================================== */
+
+:root {
+  --sat: 0;
+  --h: 288;
+
+  /* Saturation channels, all scaled by the master knob. */
+  --s-accent: calc(var(--sat) * 100%);
+  --s-deep:   calc(var(--sat) * 85%);
+  --s-line:   calc(var(--sat) * 45%);
+  --s-ink:    calc(var(--sat) * 18%);
+
+  /* As colour drains out, accents climb toward white so they stay accents
+     instead of collapsing into mid-grey. At --sat: 1 these are the plain
+     neon lightnesses; at --sat: 0 only --l-hot reaches pure white, which is
+     what keeps hover and focus a visible step above the resting state. */
+  --l-neon: calc(68% + (1 - var(--sat)) * 30%);
+  --l-hot:  calc(80% + (1 - var(--sat)) * 20%);
+  --l-deep: calc(46% + (1 - var(--sat)) * 16%);
+  --l-glow: calc(62% + (1 - var(--sat)) * 38%);
+
+  /* Reusable colour stems. hsl(var(--tint) / 0.07) reads the alpha off the end. */
+  --tint:      var(--h) var(--s-accent) var(--l-glow);
+  --tint-deep: var(--h) var(--s-line) 9%;
+
+  /* Surface — true black, so OLED pixels actually switch off.
+     Depth comes from hairlines and glow, never from lighter greys. */
+  --bg:        #000000;
+  --raised:    hsl(var(--h) var(--s-line) 6%);
+  --sunken:    hsl(var(--h) var(--s-line) 3%);
+
+  /* Glow — reserved for things that are live, focused, or clickable */
+  --neon:      hsl(var(--h) var(--s-accent) var(--l-neon));
+  --neon-hot:  hsl(var(--h) var(--s-accent) var(--l-hot));
+  --neon-deep: hsl(var(--h) var(--s-deep) var(--l-deep));
+  --glow:      0 0 14px hsl(var(--tint) / 0.40);
+  --glow-soft: 0 0 8px  hsl(var(--tint) / 0.22);
+  --text-glow: 0 0 10px hsl(var(--tint) / 0.45);
+
+  /* Ink */
+  --text:       hsl(var(--h) var(--s-ink) 94%);
+  --text-dim:   hsl(var(--h) var(--s-ink) 58%);
+  --text-faint: hsl(var(--h) var(--s-ink) 38%);
+
+  /* Structure */
+  --line:      hsl(var(--h) var(--s-line) 22%);
+  --line-soft: hsl(var(--h) var(--s-line) 14%);
+
+  /* Type — one family doing every job, differentiated by weight and tracking.
+     --mono is the one exception, for text that is literally a command or a
+     column of figures, and it stays a system stack so nothing is downloaded. */
+  --sans: "Lexend Deca", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  color-scheme: dark;
+  accent-color: var(--neon);
+}
+
+/* ---------------------------------------------------------------- base --- */
+
+* { box-sizing: border-box; }
+
+html { background: var(--bg); }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The starfield on the friend map was built for a purple-black page. */
+body::before { display: none !important; }
+
+::selection { background: hsl(var(--tint) / 0.28); color: #fff; }
+
+:focus-visible {
+  outline: 1px solid var(--neon);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--line); border-radius: 0; }
+*::-webkit-scrollbar-thumb:hover { background: var(--neon-deep); }
+
+/* ---------------------------------------------------------------- type --- */
+
+h1, h2, h3, h4, header h1 {
+  font-family: var(--sans);
+  color: var(--text);
+}
+
+h1, header h1 {
+  font-weight: 200;
+  font-size: 1.9rem;
+  letter-spacing: 0.02em;
+  color: var(--neon);
+  text-shadow: var(--text-glow);
+  margin: 0 0 0.3rem;
+}
+
+h2, h2.section {
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+p.lede, header p {
+  color: var(--text-dim);
+  font-weight: 300;
+}
+
+label, .sidebar-label {
+  color: var(--text-dim);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+code, .mcmeta-out, .stats b, .rail-meta, input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.hint, .note, .sub, .meta-line, .rail-cap, .rail-meta, .stats,
+.dropzone .hint, .pane .cap, .unit, label .unit,
+#hint, #legend, #mobile-hint {
+  color: var(--text-faint);
+}
+
+/* --------------------------------------------------------------- links --- */
+
+a {
+  color: var(--neon);
+  text-decoration: none;
+  border-bottom: 1px solid hsl(var(--tint) / 0.35);
+  transition: color 0.15s ease, border-color 0.15s ease, text-shadow 0.15s ease;
+}
+a:hover, a:focus-visible {
+  color: var(--neon-hot);
+  border-color: var(--neon-hot);
+  text-shadow: var(--text-glow);
+}
+.download-list a { color: var(--neon); border-bottom-color: hsl(var(--tint) / 0.35); }
+.download-list a:hover { color: var(--neon-hot); border-color: var(--neon-hot); }
+
+/* ------------------------------------------------------------ surfaces --- */
+
+.card, .panes > *, .stage, .mcmeta-out, .preview, #tooltip, #multibar {
+  background: var(--raised);
+  border: 1px solid var(--line-soft);
+  border-radius: 0;
+}
+
+.card { padding: 1.5rem; }
+
+/* Transparency-checker grids, re-cut from the hue so they read on black.
+   The size matters: without it the gradients tile at the size of the element
+   and the check becomes one enormous diamond across the whole panel. */
+.preview, .stage {
+  background-color: var(--sunken);
+  background-image:
+    linear-gradient(45deg,  hsl(var(--tint-deep)) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(var(--tint-deep)) 25%, transparent 25%),
+    linear-gradient(45deg,  transparent 75%, hsl(var(--tint-deep)) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(var(--tint-deep)) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+}
+
+/* The neutral grey check every image editor puts behind transparency. It is
+   deliberately outside the page palette: it has to read as "there is nothing
+   here" rather than as part of the design. --check sets the square size, and
+   .solid swaps the whole thing for a flat colour set on the element. */
+.checker {
+  --check: 16px;
+  background-color: #8c8c8c;
+  background-image:
+    linear-gradient(45deg, #5f5f5f 25%, transparent 25%, transparent 75%, #5f5f5f 75%),
+    linear-gradient(45deg, #5f5f5f 25%, transparent 25%, transparent 75%, #5f5f5f 75%);
+  background-size: var(--check) var(--check);
+  background-position: 0 0, calc(var(--check) / 2) calc(var(--check) / 2);
+}
+.checker.solid { background-image: none; }
+
+.divider { background: var(--line-soft); }
+
+/* ------------------------------------------------------------ dropzone --- */
+
+.dropzone {
+  border: 1px dashed var(--line);
+  background: transparent;
+  color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.dropzone:hover, .dropzone.drag, .dropzone:focus-visible {
+  border-color: var(--neon);
+  background: hsl(var(--tint) / 0.05);
+  box-shadow: inset var(--glow-soft);
+  outline: none;
+}
+.dropzone img.thumb { border: 1px solid var(--line); }
+
+/* -------------------------------------------------------------- inputs --- */
+
+input[type="number"],
+input[type="text"],
+input[type="search"],
+select,
+textarea {
+  font-family: var(--sans);
+  font-weight: 300;
+  background: var(--sunken);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  padding: 0.4rem 0.5rem;
+}
+input::placeholder, textarea::placeholder { color: var(--text-faint); }
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--neon);
+  box-shadow: var(--glow-soft);
+  outline: none;
+}
+
+input[type="checkbox"], input[type="radio"] { accent-color: var(--neon); }
+
+input[type="range"] { accent-color: var(--neon); background: transparent; }
+
+/* ------------------------------------------------------------- buttons --- */
+
+button {
+  font-family: var(--sans);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  background: transparent;
+  color: var(--neon);
+  border: 1px solid var(--neon-deep);
+  border-radius: 0;
+  padding: 0.55rem 1.1rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease,
+              background 0.15s ease, box-shadow 0.15s ease;
+}
+button:not(:disabled):hover,
+button:not(:disabled):focus-visible {
+  color: var(--neon-hot);
+  border-color: var(--neon);
+  background: hsl(var(--tint) / 0.07);
+  box-shadow: var(--glow);
+}
+button:not(:disabled):active { background: hsl(var(--tint) / 0.14); }
+button:disabled {
+  color: var(--text-faint);
+  border-color: var(--line-soft);
+  background: transparent;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Segmented controls: the selected one is the lit one. Pages that mark state
+   with aria-pressed get the same treatment without opting into .seg. */
+.seg button { border-color: var(--line); color: var(--text-dim); }
+.seg button.on, .seg button.active,
+button[aria-pressed="true"] {
+  color: var(--neon);
+  border-color: var(--neon);
+  background: hsl(var(--tint) / 0.08);
+  box-shadow: var(--glow-soft);
+}
+
+button.ghost {
+  color: var(--text-dim);
+  border-color: var(--line);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+}
+button.ghost:not(:disabled):hover { color: var(--neon); border-color: var(--neon); }
+
+.seg { display: flex; border: 1px solid var(--line); width: fit-content; max-width: 100%; flex-wrap: wrap; }
+.seg button { border: none; border-right: 1px solid var(--line); }
+.seg button:last-child { border-right: none; }
+
+/* Colour swatches carry their own fill, so only the frame is themed. */
+.swatch {
+  border: 1px solid var(--line);
+  background: var(--sunken);
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.swatch .chip { height: 34px; border: 1px solid hsl(var(--h) var(--s-line) 40%); cursor: pointer; padding: 0; width: 100%; }
+.swatch .chip:hover { border-color: var(--neon); }
+.swatch .acts button { flex: 1; font-size: 0.68rem; padding: 0.15rem 0; }
+.swatch.locked { border-color: var(--neon-deep); }
+.swatch.locked .acts button.lk {
+  color: var(--neon);
+  border-color: var(--neon);
+  background: hsl(var(--tint) / 0.10);
+}
+
+#reset-btn { color: var(--text-dim); border-color: var(--line); }
+#reset-btn:hover { color: var(--text); border-color: var(--text-dim); box-shadow: none; }
+
+/* -------------------------------------------------------------- status --- */
+
+.status { color: var(--text-dim); }
+/* Monochrome, so failure is signalled by intensity and a bar, not by hue. */
+.status.error {
+  color: var(--neon-hot);
+  text-shadow: var(--text-glow);
+  border-left: 2px solid var(--neon);
+  padding-left: 0.6rem;
+}
+
+/* ------------------------------------------------- image → svg specifics -- */
+
+.wipe .seam { background: var(--neon); box-shadow: var(--glow); }
+.wipe .seam::after {
+  background: var(--neon);
+  border: 2px solid #000;
+  box-shadow: var(--glow);
+}
+.stats b { color: var(--neon); }
+
+/* ------------------------------------------------ friend map specifics --- */
+
+header { border-bottom: 1px solid var(--line-soft); }
+
+.sidebar {
+  background: var(--bg);
+  border-right: 1px solid var(--line-soft);
+}
+
+.sidebar .chip {
+  color: var(--text);
+  border: 1px solid transparent;
+  border-radius: 0;
+}
+.sidebar .chip:hover { background: hsl(var(--tint) / 0.07); }
+.sidebar .chip.active {
+  background: hsl(var(--tint) / 0.12);
+  border-color: var(--neon-deep);
+  color: var(--neon-hot);
+}
+.chip-count {
+  color: var(--text-faint);
+  background: hsl(var(--h) var(--s-line) 12%);
+  border-radius: 0;
+}
+
+#tooltip { box-shadow: 0 0 0 1px hsl(var(--tint) / 0.12), 0 8px 30px #000; }
+#tooltip .tip-title {
+  font-family: var(--sans);
+  font-weight: 500;
+  color: var(--neon);
+  text-shadow: var(--text-glow);
+}
+#tooltip .tip-item { color: var(--text); font-weight: 300; }
+
+#multibar {
+  color: var(--neon);
+  border-color: var(--neon-deep);
+  border-radius: 0;
+  box-shadow: var(--glow-soft);
+}
+
+/* The old legend advertised a rainbow; the scale is now one hue, dim → lit. */
+.leg-rainbow {
+  background: linear-gradient(to right,
+    hsl(var(--h) var(--s-line) 22%), var(--neon));
+  border-radius: 0;
+}
+.leg-solid  { border-color: hsl(var(--tint) / 0.55); }
+.leg-dashed { border-color: hsl(var(--h) var(--s-ink) 45%); }
+
+/* --------------------------------------------------------------- back ---- */
+
+/* Every page but the index carries one of these directly above its title. */
+.home {
+  display: inline-block;
+  margin-bottom: 1.1rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  border-bottom: 1px solid transparent;
+}
+.home:hover, .home:focus-visible {
+  color: var(--neon);
+  border-bottom-color: transparent;
+  text-shadow: var(--text-glow);
+}
+
+/* ---------------------------------------------------------------- nav ---- */
+
+nav ul { list-style: none; padding: 0; margin: 0; }
+
+/* -------------------------------------------------------------- motion --- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

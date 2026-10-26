@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- Fitbit Air Export <https://github.com/9-7-8/fitbit-air-export>
+     Copyright (C) 2026 Ixora. SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  body { margin: 0; padding: 3rem 16px 5rem; }
+  main { max-width: 760px; margin: 0 auto; }
+  p, li { max-width: 66ch; }
+  .dim { color: var(--text-dim); }
+  h2 { margin: 2.4rem 0 0.7rem; font-size: 1rem; }
+  li { margin-bottom: 0.5rem; color: var(--text-dim); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="index.html">← Fitbit Air Export</a></p>
+  <h1>Privacy Policy</h1>
+  <p class="dim">Last updated 2026-10-25.</p>
+
+  <p>Fitbit Air Export ("the app") is a script you run on your own computer. This policy covers the app and the
+    Google Cloud projects its author runs it under.</p>
+
+  <h2>What data the app accesses</h2>
+  <p>With your permission, through Google's OAuth sign-in, the app reads your own data from the Google Health API,
+    read-only: sleep sessions and stages; activity (steps, distance, floors, active and active-zone minutes, calories);
+    and health metrics (heart rate, resting heart rate, heart rate variability, blood oxygen, respiratory rate).</p>
+
+  <h2>How the data is used</h2>
+  <ul>
+    <li>The app writes the data to files in a folder on your own computer, for your own records and journaling. That is its only use.</li>
+    <li>The app has no server. The author never receives, sees, stores, or collects your data.</li>
+    <li>Your data is not sold, shared, transferred to anyone, used for advertising, or used to train AI or machine-learning models.</li>
+    <li>Your sign-in token is stored only on your computer, in <code>~/.google-health/</code>.</li>
+  </ul>
+
+  <h2>Google API Services User Data Policy</h2>
+  <p>The app's use and transfer of information received from Google APIs adheres to the
+    <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>,
+    including the Limited Use requirements.</p>
+
+  <h2>Removing access and data</h2>
+  <ul>
+    <li>Revoke the app's access at any time at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</li>
+    <li>Delete the files the app wrote, and the <code>~/.google-health/</code> folder, to remove everything it stored.</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>Questions: open an issue at <a href="https://github.com/9-7-8/fitbit-air-export/issues">github.com/9-7-8/fitbit-air-export/issues</a>.</p>
+</main>
+</body>
+</html>

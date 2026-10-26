@@ -1,0 +1,4 @@
+fitbit-data/
+client_secret*.json
+token.json
+__pycache__/
