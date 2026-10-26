@@ -139,7 +139,7 @@ def rfc(dt):
 
 
 def civil(d):
-    return {"year": d.year, "month": d.month, "day": d.day}
+    return {"date": {"year": d.year, "month": d.month, "day": d.day}}
 
 
 def pull_day(token, day):
